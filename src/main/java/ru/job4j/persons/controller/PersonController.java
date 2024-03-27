@@ -1,21 +1,21 @@
 package ru.job4j.persons.controller;
 
+import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.job4j.persons.model.Person;
-import ru.job4j.persons.repository.PersonRepository;
+import ru.job4j.persons.service.PersonService;
 
+import java.sql.SQLException;
 import java.util.List;
 
 @RestController
 @RequestMapping("/person")
+@AllArgsConstructor
 public class PersonController {
 
-    private final PersonRepository persons;
-    public PersonController(final PersonRepository persons) {
-        this.persons = persons;
-    }
+    private final PersonService persons;
 
     @GetMapping("/")
     public List<Person> findAll() {
@@ -33,23 +33,27 @@ public class PersonController {
 
     @PostMapping("/")
     public ResponseEntity<Person> create(@RequestBody Person person) {
-        return new ResponseEntity<Person>(
-                this.persons.save(person),
-                HttpStatus.CREATED
-        );
+        return this.persons
+                .save(person)
+                .map(ResponseEntity::ok)
+                .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
     @PutMapping("/")
-    public ResponseEntity<Void> update(@RequestBody Person person) {
-        this.persons.save(person);
-        return ResponseEntity.ok().build();
+    public ResponseEntity<Person> update(@RequestBody Person person) {
+        if (this.persons.update(person)) {
+            return new ResponseEntity<>(HttpStatus.OK);
+        }
+        return new ResponseEntity<>(HttpStatus.CONFLICT);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable int id) {
+    public ResponseEntity<Person> delete(@PathVariable int id) {
         Person person = new Person();
         person.setId(id);
-        this.persons.delete(person);
-        return ResponseEntity.ok().build();
+        if (this.persons.delete(person)) {
+            return new ResponseEntity<>(HttpStatus.OK);
+        }
+        return new ResponseEntity<>(HttpStatus.CONFLICT);
     }
 }

@@ -47,6 +47,12 @@
 
 	</dependencies>
 
+	<repositories>
+		<repository>
+			<id>org.source.repo</id>
+			<url>https://maven.orgName.com/maven2/</url>
+		</repository>
+	</repositories>
 	<build>
 		<plugins>
 			<plugin>

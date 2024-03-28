@@ -36,7 +36,7 @@ public class PersonController {
         return this.persons
                 .save(person)
                 .map(ResponseEntity::ok)
-                .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
+                .orElseGet(() -> new ResponseEntity<>(HttpStatus.CONFLICT));
     }
 
     @PutMapping("/")
@@ -44,7 +44,7 @@ public class PersonController {
         if (this.persons.update(person)) {
             return new ResponseEntity<>(HttpStatus.OK);
         }
-        return new ResponseEntity<>(HttpStatus.CONFLICT);
+        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
     @DeleteMapping("/{id}")
@@ -54,6 +54,6 @@ public class PersonController {
         if (this.persons.delete(person)) {
             return new ResponseEntity<>(HttpStatus.OK);
         }
-        return new ResponseEntity<>(HttpStatus.CONFLICT);
+        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 }

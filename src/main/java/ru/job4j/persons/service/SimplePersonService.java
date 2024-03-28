@@ -39,13 +39,23 @@ public class SimplePersonService implements PersonService {
     }
 
     public boolean update(Person person) {
-        personRepository.save(person);
-        return personRepository.findAll().contains(person);
+        boolean result = false;
+        var updatePerson = personRepository.findById(person.getId());
+        if (updatePerson.isPresent()) {
+            personRepository.save(updatePerson.get());
+            result = true;
+        }
+        return result;
     }
 
     @Override
     public boolean delete(Person person) {
-        personRepository.delete(person);
-        return !personRepository.findAll().contains(person);
+        boolean result = false;
+        var updatePerson = personRepository.findById(person.getId());
+        if (updatePerson.isPresent()) {
+            personRepository.delete(updatePerson.get());
+            result = true;
+        }
+        return result;
     }
 }

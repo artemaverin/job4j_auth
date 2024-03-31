@@ -3,11 +3,11 @@ package ru.job4j.persons.controller;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import ru.job4j.persons.model.Person;
 import ru.job4j.persons.service.PersonService;
 
-import java.sql.SQLException;
 import java.util.List;
 
 @RestController
@@ -16,6 +16,8 @@ import java.util.List;
 public class PersonController {
 
     private final PersonService persons;
+
+    private BCryptPasswordEncoder encoder;
 
     @GetMapping("/")
     public List<Person> findAll() {
@@ -37,6 +39,12 @@ public class PersonController {
                 .save(person)
                 .map(ResponseEntity::ok)
                 .orElseGet(() -> new ResponseEntity<>(HttpStatus.CONFLICT));
+    }
+
+    @PostMapping("/sign-up")
+    public void signUp(@RequestBody Person person) {
+        person.setPassword(encoder.encode(person.getPassword()));
+        persons.save(person);
     }
 
     @PutMapping("/")

@@ -4,15 +4,22 @@ import lombok.AllArgsConstructor;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import ru.job4j.persons.model.Person;
 import ru.job4j.persons.repository.PersonRepository;
 
 import java.util.List;
 import java.util.Optional;
+
+import static java.util.Collections.emptyList;
+
 @Service
 @AllArgsConstructor
-public class SimplePersonService implements PersonService {
+public class SimplePersonService implements PersonService, UserDetailsService {
 
     private PersonRepository personRepository;
 
@@ -57,5 +64,14 @@ public class SimplePersonService implements PersonService {
             result = true;
         }
         return result;
+    }
+
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        Person user = personRepository.findByLogin(username);
+        if (user == null) {
+            throw new UsernameNotFoundException(username);
+        }
+        return new User(user.getLogin(), user.getPassword(), emptyList());
     }
 }

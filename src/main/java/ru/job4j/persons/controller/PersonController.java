@@ -33,19 +33,15 @@ public class PersonController {
         );
     }
 
-    @PostMapping("/")
+    @PostMapping("/sign-up")
     public ResponseEntity<Person> create(@RequestBody Person person) {
+        person.setPassword(encoder.encode(person.getPassword()));
         return this.persons
                 .save(person)
                 .map(ResponseEntity::ok)
                 .orElseGet(() -> new ResponseEntity<>(HttpStatus.CONFLICT));
     }
 
-    @PostMapping("/sign-up")
-    public void signUp(@RequestBody Person person) {
-        person.setPassword(encoder.encode(person.getPassword()));
-        persons.save(person);
-    }
 
     @PutMapping("/")
     public ResponseEntity<Person> update(@RequestBody Person person) {

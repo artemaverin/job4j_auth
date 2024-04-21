@@ -9,6 +9,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+import ru.job4j.persons.dto.PersonDTO;
 import ru.job4j.persons.model.Person;
 import ru.job4j.persons.repository.PersonRepository;
 
@@ -53,6 +54,13 @@ public class SimplePersonService implements PersonService, UserDetailsService {
             result = true;
         }
         return result;
+    }
+
+    @Override
+    public Optional<Person> updatePassword(PersonDTO personDTO) {
+        var person = personRepository.findById(personDTO.getId());
+        person.ifPresent(value -> value.setPassword(personDTO.getPassword()));
+        return person;
     }
 
     @Override

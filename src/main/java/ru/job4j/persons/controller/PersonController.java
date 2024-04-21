@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
+import ru.job4j.persons.dto.PersonDTO;
 import ru.job4j.persons.model.Person;
 import ru.job4j.persons.service.PersonService;
 
@@ -90,6 +91,15 @@ public class PersonController {
             put("type", e.getClass());
         }}));
         LOGGER.error(e.getLocalizedMessage());
+    }
+
+    @PatchMapping("/")
+    public ResponseEntity<Person> updatePassword(@RequestBody PersonDTO personDTO) {
+        if (personDTO == null) {
+            throw new NullPointerException("person doesn't exists");
+        }
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(persons.updatePassword(personDTO).get());
     }
 
 }

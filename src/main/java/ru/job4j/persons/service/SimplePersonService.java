@@ -8,6 +8,7 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import ru.job4j.persons.dto.PersonDTO;
 import ru.job4j.persons.model.Person;
@@ -23,6 +24,8 @@ import static java.util.Collections.emptyList;
 public class SimplePersonService implements PersonService, UserDetailsService {
 
     private PersonRepository personRepository;
+
+    private BCryptPasswordEncoder encoder;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SimplePersonService.class);
     @Override
@@ -59,7 +62,7 @@ public class SimplePersonService implements PersonService, UserDetailsService {
     @Override
     public Optional<Person> updatePassword(PersonDTO personDTO) {
         var person = personRepository.findById(personDTO.getId());
-        person.ifPresent(value -> value.setPassword(personDTO.getPassword()));
+        person.ifPresent(value -> value.setPassword(encoder.encode(personDTO.getPassword())));
         return person;
     }
 

@@ -98,8 +98,9 @@ public class PersonController {
         if (personDTO == null) {
             throw new NullPointerException("person doesn't exists");
         }
-        return ResponseEntity.status(HttpStatus.OK)
-                .body(persons.updatePassword(personDTO).get());
+        var optionalPerson = persons.updatePassword(personDTO);
+        return optionalPerson.map(person -> ResponseEntity.status(HttpStatus.OK).body(person))
+                .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
 }

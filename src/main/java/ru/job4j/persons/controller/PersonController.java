@@ -16,6 +16,7 @@ import ru.job4j.persons.service.PersonService;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.validation.Valid;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
@@ -48,10 +49,7 @@ public class PersonController {
     }
 
     @PostMapping("/sign-up")
-    public ResponseEntity<Person> create(@RequestBody Person person) {
-        if (person == null) {
-            throw new NullPointerException("person doesn't exists");
-        }
+    public ResponseEntity<Person> create(@Valid @RequestBody Person person) {
         person.setPassword(encoder.encode(person.getPassword()));
         return this.persons
                 .save(person)
@@ -61,11 +59,7 @@ public class PersonController {
 
 
     @PutMapping("/")
-    public ResponseEntity<Person> update(@RequestBody Person person) {
-        if (person == null) {
-            throw new NullPointerException("person doesn't exists");
-        }
-
+    public ResponseEntity<Person> update(@Valid @RequestBody Person person) {
         if (this.persons.update(person)) {
             return new ResponseEntity<>(HttpStatus.OK);
         }
@@ -94,10 +88,7 @@ public class PersonController {
     }
 
     @PatchMapping("/")
-    public ResponseEntity<Person> updatePassword(@RequestBody PersonDTO personDTO) {
-        if (personDTO == null) {
-            throw new NullPointerException("person doesn't exists");
-        }
+    public ResponseEntity<Person> updatePassword(@Valid @RequestBody PersonDTO personDTO) {
         var optionalPerson = persons.updatePassword(personDTO);
         return optionalPerson.map(person -> ResponseEntity.status(HttpStatus.OK).body(person))
                 .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
